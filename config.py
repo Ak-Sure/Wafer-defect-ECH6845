@@ -164,33 +164,100 @@ MODEL_CONFIGS = {
 # ============================================================================
 # Define parameter grids for each model's hyperparameter tuning
 
+# ============================================================================
+# MODEL 1: SIMPLE NEURAL NETWORK - HYPERPARAMETER TUNING
+# Hyperparameters: learning_rate, batch_size, epochs, optimizer
+# ============================================================================
 SIMPLE_NN_TUNING_GRID = {
     'learning_rate': [0.001, 0.0005, 0.0001],
     'batch_size': [32, 64, 128],
+    'num_epochs': [15, 20, 25],
     'optimizer': ['adam', 'sgd'],
 }
 
+# ============================================================================
+# MODEL 2: MULTI-LAYER PERCEPTRON - HYPERPARAMETER TUNING
+# Hyperparameters: learning_rate, batch_size, hidden_sizes, dropout, epochs, optimizer
+# ============================================================================
 MLP_TUNING_GRID = {
-    'learning_rate': [0.0005, 0.0001, 0.00005],
+    'learning_rate': [0.001, 0.0005, 0.0001],
     'batch_size': [32, 64],
+    'hidden_sizes': [
+        [512, 256, 128],      # 3-layer architecture
+        [256, 128],           # 2-layer architecture
+    ],
+    'dropout': [0.1, 0.2, 0.3],
+    'num_epochs': [15, 20, 25],
     'optimizer': ['adam', 'sgd'],
 }
 
+# ============================================================================
+# MODEL 3: CONVOLUTIONAL NEURAL NETWORK - HYPERPARAMETER TUNING
+# Hyperparameters: learning_rate, batch_size, kernel_size, padding, epochs, optimizer
+# ============================================================================
 CNN_TUNING_GRID = {
     'learning_rate': [0.001, 0.0005, 0.0001],
-    'batch_size': [32, 64, 128],
+    'batch_size': [32, 64],
+    'kernel_size': [3, 5],
+    'padding': [0, 1],
+    'num_epochs': [15, 20, 25],
+    'optimizer': ['adam', 'sgd'],
+}
+
+# ============================================================================
+# MODEL 4: TRANSFER LEARNING - HYPERPARAMETER TUNING
+# Hyperparameters: learning_rate, batch_size, epochs
+# ============================================================================
+TRANSFER_LEARNING_TUNING_GRID = {
+    'learning_rate': [0.0001, 0.00005, 0.00001],
+    'batch_size': [16, 32],
+    'num_epochs': [10, 15, 20],
+}
+
+# ============================================================================
+# ADVANCED TUNING GRIDS (For detailed experimentation)
+# ============================================================================
+
+# MLP with extended parameter search
+MLP_ADVANCED_TUNING_GRID = {
+    'learning_rate': [0.001, 0.0005],
+    'batch_size': [32, 64],
+    'num_epochs': [15, 20, 25],
+    'hidden_sizes': [
+        [512, 256, 128],      # 3 layers
+        [256, 128],           # 2 layers
+        [512, 256, 128, 64],  # 4 layers
+    ],
+    'dropout': [0.1, 0.2],
     'optimizer': ['adam'],
 }
 
-TRANSFER_LEARNING_TUNING_GRID = {
-    'learning_rate': [0.0001, 0.00005, 0.00001],
-    'batch_size': [32, 16],
+# MLP with flexible layer count
+MLP_LAYER_TUNING_GRID = {
+    'learning_rate': [0.001],
+    'batch_size': [64],
+    'num_epochs': [20],
+    'num_hidden_layers': [2, 3, 4],
+    'neurons_per_layer': [256, 512],
+    'dropout': [0.1],
+    'optimizer': ['adam'],
+}
+
+# Quick tuning for fast experimentation
+MLP_QUICK_TUNING_GRID = {
+    'learning_rate': [0.001, 0.0005],
+    'batch_size': [64],
+    'num_epochs': [10, 15],
+    'hidden_sizes': [[512, 256, 128], [256, 128]],
     'optimizer': ['adam'],
 }
 
 TUNING_GRIDS = {
     'SimpleNN': SIMPLE_NN_TUNING_GRID,
     'MLP': MLP_TUNING_GRID,
+    'MLP_Advanced': MLP_ADVANCED_TUNING_GRID,
+    'MLP_Layers': MLP_LAYER_TUNING_GRID,
+    'MLP_Quick': MLP_QUICK_TUNING_GRID,
     'CNN': CNN_TUNING_GRID,
     'TransferLearning': TRANSFER_LEARNING_TUNING_GRID,
 }
