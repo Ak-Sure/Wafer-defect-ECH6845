@@ -169,9 +169,9 @@ MODEL_CONFIGS = {
 # Hyperparameters: learning_rate, batch_size, epochs, optimizer
 # ============================================================================
 SIMPLE_NN_TUNING_GRID = {
-    'learning_rate': [0.001, 0.0005, 0.0001],
+    'learning_rate': [0.005, 0.001, 0.0005, 0.0001],
     'batch_size': [32, 64, 128],
-    'num_epochs': [15, 20, 25],
+    'num_epochs': [15, 20, 30],
     'optimizer': ['adam', 'sgd'],
 }
 
@@ -180,14 +180,15 @@ SIMPLE_NN_TUNING_GRID = {
 # Hyperparameters: learning_rate, batch_size, hidden_sizes, dropout, epochs, optimizer
 # ============================================================================
 MLP_TUNING_GRID = {
-    'learning_rate': [0.001, 0.0005, 0.0001],
-    'batch_size': [32, 64],
+    'learning_rate': [0.005, 0.001, 0.0005, 0.0001],
+    'batch_size': [32, 64, 128],
     'hidden_sizes': [
+        [1024, 512, 256, 1280] #4-layer architecture
         [512, 256, 128],      # 3-layer architecture
         [256, 128],           # 2-layer architecture
     ],
     'dropout': [0.1, 0.2, 0.3],
-    'num_epochs': [15, 20, 25],
+    'num_epochs': [15, 20, 30],
     'optimizer': ['adam', 'sgd'],
 }
 
@@ -196,11 +197,11 @@ MLP_TUNING_GRID = {
 # Hyperparameters: learning_rate, batch_size, kernel_size, padding, epochs, optimizer
 # ============================================================================
 CNN_TUNING_GRID = {
-    'learning_rate': [0.001, 0.0005, 0.0001],
-    'batch_size': [32, 64],
+    'learning_rate': [0.005, 0.001, 0.0005, 0.0001],
+    'batch_size': [32, 64, 128],
     'kernel_size': [3, 5],
     'padding': [0, 1],
-    'num_epochs': [15, 20, 25],
+    'num_epochs': [15, 20, 30],
     'optimizer': ['adam', 'sgd'],
 }
 
@@ -209,47 +210,9 @@ CNN_TUNING_GRID = {
 # Hyperparameters: learning_rate, batch_size, epochs
 # ============================================================================
 TRANSFER_LEARNING_TUNING_GRID = {
-    'learning_rate': [0.0001, 0.00005, 0.00001],
-    'batch_size': [16, 32],
-    'num_epochs': [10, 15, 20],
-}
-
-# ============================================================================
-# ADVANCED TUNING GRIDS (For detailed experimentation)
-# ============================================================================
-
-# MLP with extended parameter search
-MLP_ADVANCED_TUNING_GRID = {
-    'learning_rate': [0.001, 0.0005],
-    'batch_size': [32, 64],
-    'num_epochs': [15, 20, 25],
-    'hidden_sizes': [
-        [512, 256, 128],      # 3 layers
-        [256, 128],           # 2 layers
-        [512, 256, 128, 64],  # 4 layers
-    ],
-    'dropout': [0.1, 0.2],
-    'optimizer': ['adam'],
-}
-
-# MLP with flexible layer count
-MLP_LAYER_TUNING_GRID = {
-    'learning_rate': [0.001],
-    'batch_size': [64],
-    'num_epochs': [20],
-    'num_hidden_layers': [2, 3, 4],
-    'neurons_per_layer': [256, 512],
-    'dropout': [0.1],
-    'optimizer': ['adam'],
-}
-
-# Quick tuning for fast experimentation
-MLP_QUICK_TUNING_GRID = {
-    'learning_rate': [0.001, 0.0005],
-    'batch_size': [64],
-    'num_epochs': [10, 15],
-    'hidden_sizes': [[512, 256, 128], [256, 128]],
-    'optimizer': ['adam'],
+    'learning_rate': [0.0005, 0.0001, 0.00005, 0.00001],
+    'batch_size': [16, 32, 64],
+    'num_epochs': [15, 20, 30],
 }
 
 TUNING_GRIDS = {
@@ -352,3 +315,4 @@ if __name__ == "__main__":
     # Example: Get tuning grid
     cnn_grid = get_tuning_grid('CNN')
     print(f"\nCNN Tuning Grid: {cnn_grid}")
+
