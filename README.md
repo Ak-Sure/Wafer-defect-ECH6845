@@ -17,4 +17,4 @@ python -m ipykernel install --user --name=wafer_defect --display-name="Python (W
 ```
 ---
 
-
+![output.png](output.png)
