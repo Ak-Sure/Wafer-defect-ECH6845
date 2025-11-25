@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torchvision import models
 
 
 # Simple Neural Network Model
@@ -48,49 +49,64 @@ class MLP(nn.Module):
 class WaferCNN(nn.Module):
     """Convolutional Neural Network for wafer defect classification."""
     
-    def __init__(self, num_classes, input_channels=1):
+    def __init__(self, num_classes, input_channels=1, kernel_size=3, padding=1):
         super(WaferCNN, self).__init__()
         
+        self.kernel_size = kernel_size
+        self.padding = padding
+        
         # Convolutional Block 1
-        self.conv1 = nn.Conv2d(input_channels, 32, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv2d(input_channels, 32, kernel_size=kernel_size, padding=padding)
         self.bn1 = nn.BatchNorm2d(32)
         
         # Convolutional Block 2
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=kernel_size, padding=padding)
         self.bn2 = nn.BatchNorm2d(64)
         
         # Convolutional Block 3
-        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=kernel_size, padding=padding)
         self.bn3 = nn.BatchNorm2d(128)
         
         self.pool = nn.MaxPool2d(2, 2)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(0.5)
         
-        # Calculate flattened size: 128 * 6 * 6 = 4608
-        # (52 -> 26 -> 13 -> 6 after three pooling layers)
-        self.fc1 = nn.Linear(128 * 6 * 6, 256)
+        # Calculate flattened size dynamically based on kernel_size and padding
+        # Input: 52x52
+        self.flatten_size = self._calculate_flatten_size(52, kernel_size, padding)
+        
+        self.fc1 = nn.Linear(128 * self.flatten_size, 256)
         self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, num_classes)
+    
+    def _calculate_flatten_size(self, input_size, kernel_size, padding):
+        """Calculate output spatial dimensions after conv and pooling operations"""
+        # Formula: output_size = floor((input_size + 2*padding - kernel_size) / stride) + 1
+        # For each conv layer with stride=1
+        size = input_size
+        for _ in range(3):  # 3 conv blocks
+            size = (size + 2 * padding - kernel_size) // 1 + 1
+            size = size // 2  # MaxPool2d with stride 2
+        return size * size
     
     def forward(self, x):
         # Conv Block 1
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        x = self.pool(x)  # 52x52 -> 26x26
+        x = self.pool(x)  # Reduce spatial dimensions
         
         # Conv Block 2
         x = self.conv2(x)
         x = self.bn2(x)
         x = self.relu(x)
-        x = self.pool(x)  # 26x26 -> 13x13
+        x = self.pool(x)  # Reduce spatial dimensions
         
         # Conv Block 3
         x = self.conv3(x)
         x = self.bn3(x)
         x = self.relu(x)
-        x = self.pool(x)  # 13x13 -> 6x6
+        x = self.pool(x)  # Reduce spatial dimensions
         
         # Flatten
         x = x.view(x.size(0), -1)
@@ -116,23 +132,8 @@ class WaferMobileNet(nn.Module):
     def __init__(self, num_classes, pretrained=True, freeze_features=False):
         super(WaferMobileNet, self).__init__()
         
-        # Load pre-trained MobileNetV2
+        # Load pre-trained MobileNetV2 (expects 3-channel RGB input)
         self.mobilenet = models.mobilenet_v2(pretrained=pretrained)
-        
-        # Modify first conv layer to accept 1 channel (grayscale)
-        # We'll average the weights across RGB channels
-        original_conv = self.mobilenet.features[0][0]
-        self.mobilenet.features[0][0] = nn.Conv2d(
-            1, 32, kernel_size=3, stride=2, padding=1, bias=False
-        )
-        
-        # Initialize new conv layer with averaged pre-trained weights
-        if pretrained:
-            with torch.no_grad():
-                # Average RGB channels to create single channel weights
-                self.mobilenet.features[0][0].weight = nn.Parameter(
-                    original_conv.weight.mean(dim=1, keepdim=True)
-                )
         
         # Optionally freeze feature extraction layers
         if freeze_features:

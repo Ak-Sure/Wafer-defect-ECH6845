@@ -141,29 +141,90 @@ def evaluate_model(model, test_loader, device='cuda'):
     return accuracy, all_labels, all_preds
 
 
+def train_model_simple(model, train_loader, criterion, optimizer, 
+                       num_epochs=20, device='cuda'):
+    """
+    Train a PyTorch model WITHOUT validation set (simple training).
+    
+    Args:
+        model: PyTorch model
+        train_loader: Training data loader
+        criterion: Loss function
+        optimizer: Optimizer
+        num_epochs: Number of epochs to train
+        device: Device to train on
+    
+    Returns:
+        Dictionary containing training history
+    """
+    history = {
+        'train_loss': [],
+        'train_acc': []
+    }
+    
+    for epoch in range(num_epochs):
+        # Training phase
+        model.train()
+        train_loss = 0.0
+        train_correct = 0
+        train_total = 0
+        
+        for inputs, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs} [Train]", leave=False):
+            inputs, labels = inputs.to(device), labels.to(device)
+            
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+            
+            train_loss += loss.item() * inputs.size(0)
+            _, predicted = torch.max(outputs, 1)
+            train_total += labels.size(0)
+            train_correct += (predicted == labels).sum().item()
+        
+        train_loss = train_loss / train_total
+        train_acc = train_correct / train_total
+        
+        # Save history
+        history['train_loss'].append(train_loss)
+        history['train_acc'].append(train_acc)
+        
+        print(f"Epoch {epoch+1}/{num_epochs}:")
+        print(f"  Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
+    
+    print(f"\nTraining complete!")
+    return history
+
+
 def plot_training_history(history, title="Training History"):
     """
     Plot training and validation loss/accuracy curves.
+    Handles both histories with validation (from train_model) and without (from train_model_simple).
     """
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    
+    has_validation = 'val_loss' in history
     
     # Loss plot
-    ax1.plot(history['train_loss'], label='Train Loss', marker='o')
-    ax1.plot(history['val_loss'], label='Val Loss', marker='s')
-    ax1.set_xlabel('Epoch')
-    ax1.set_ylabel('Loss')
-    ax1.set_title('Loss Over Time')
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
+    axes[0].plot(history['train_loss'], label='Train Loss', marker='o')
+    if has_validation:
+        axes[0].plot(history['val_loss'], label='Val Loss', marker='s')
+    axes[0].set_xlabel('Epoch')
+    axes[0].set_ylabel('Loss')
+    axes[0].set_title('Loss Over Time')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
     
     # Accuracy plot
-    ax2.plot(history['train_acc'], label='Train Accuracy', marker='o')
-    ax2.plot(history['val_acc'], label='Val Accuracy', marker='s')
-    ax2.set_xlabel('Epoch')
-    ax2.set_ylabel('Accuracy')
-    ax2.set_title('Accuracy Over Time')
-    ax2.legend()
-    ax2.grid(True, alpha=0.3)
+    axes[1].plot(history['train_acc'], label='Train Accuracy', marker='o')
+    if has_validation:
+        axes[1].plot(history['val_acc'], label='Val Accuracy', marker='s')
+    axes[1].set_xlabel('Epoch')
+    axes[1].set_ylabel('Accuracy')
+    axes[1].set_title('Accuracy Over Time')
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
     
     plt.suptitle(title, fontsize=16)
     plt.tight_layout()
@@ -708,17 +769,38 @@ def hyperparameter_tuning(model_class, X_train, X_val, X_test, y_train, y_val, y
         X_train, X_val, X_test: Training, validation, test data arrays
         y_train, y_val, y_test: Training, validation, test labels
         param_grid: Dictionary defining hyperparameters to tune
+            Standard training parameters:
+                'learning_rate': [0.001, 0.0001]
+                'batch_size': [32, 64]
+                'optimizer': ['adam', 'sgd']
+                'num_epochs': [10, 20, 30]  # Epochs to train for
+            
+            MLP architecture parameters (for tuning network structure):
+                'hidden_sizes': [[512, 256, 128], [256, 128]]  # Direct layer sizes
+                'num_hidden_layers': [2, 3, 4]  # Number of hidden layers
+                'neurons_per_layer': [256, 512]  # Neurons in each layer
+                'dropout': [0.1, 0.2, 0.3]  # Dropout rate
+            
             Example for learning rate and batch size:
             {
                 'learning_rate': [0.001, 0.0001],
                 'batch_size': [32, 64],
                 'optimizer': ['adam', 'sgd']
             }
+            
+            Example for MLP with architecture tuning:
+            {
+                'learning_rate': [0.001],
+                'batch_size': [64],
+                'num_epochs': [20],
+                'hidden_sizes': [[512, 256, 128], [256, 128]],
+                'dropout': [0.1, 0.2]
+            }
         input_size: Input feature size (auto-calculated if None)
         num_classes: Number of output classes (default: 38)
         device: Device to train on ('cuda' or 'cpu')
         criterion: Loss function (default: CrossEntropyLoss)
-        num_epochs: Maximum training epochs (default: 20)
+        num_epochs: Default maximum training epochs (default: 20)
         patience: Early stopping patience (default: 5)
         verbose: Print progress information (default: True)
     
@@ -732,7 +814,8 @@ def hyperparameter_tuning(model_class, X_train, X_val, X_test, y_train, y_val, y
             - 'best_test_acc': Test accuracy of best model
             - 'summary_df': Pandas DataFrame of all results
     
-    Example:
+    Examples:
+        Example 1 - Basic training hyperparameters:
         >>> param_grid = {
         ...     'learning_rate': [0.001, 0.0001],
         ...     'batch_size': [32, 64],
@@ -740,6 +823,19 @@ def hyperparameter_tuning(model_class, X_train, X_val, X_test, y_train, y_val, y
         ... }
         >>> results = hyperparameter_tuning(
         ...     SimpleNN, X_train, X_val, X_test, y_train, y_val, y_test,
+        ...     param_grid, input_size=2704, num_classes=38
+        ... )
+        
+        Example 2 - MLP with architecture tuning (epochs, neurons, layers):
+        >>> param_grid = {
+        ...     'learning_rate': [0.001],
+        ...     'batch_size': [32, 64],
+        ...     'num_epochs': [10, 20],
+        ...     'hidden_sizes': [[512, 256, 128], [256, 128]],
+        ...     'dropout': [0.1, 0.2]
+        ... }
+        >>> results = hyperparameter_tuning(
+        ...     MLP, X_train, X_val, X_test, y_train, y_val, y_test,
         ...     param_grid, input_size=2704, num_classes=38
         ... )
         >>> print(results['best_params'])
@@ -790,10 +886,42 @@ def hyperparameter_tuning(model_class, X_train, X_val, X_test, y_train, y_val, y
             optimizer_type = params.get('optimizer', 'adam')
             epochs_to_train = params.get('num_epochs', num_epochs)  # Get epochs from params if provided
             
-            # Additional model-specific parameters
+            # Build model_kwargs with architecture parameters
             model_kwargs = {}
+            
+            # Handle hidden_sizes for MLP (number of neurons per layer)
+            if 'hidden_sizes' in params:
+                hidden_sizes = params['hidden_sizes']
+                # If it's a string or list representation, parse it
+                if isinstance(hidden_sizes, str):
+                    # Handle formats like "512,256,128" or "[512,256,128]"
+                    hidden_sizes = hidden_sizes.strip('[]').split(',')
+                    hidden_sizes = [int(h.strip()) for h in hidden_sizes]
+                model_kwargs['hidden_sizes'] = hidden_sizes
+            
+            # Handle hidden_layers for MLP (number of hidden layers)
+            if 'num_hidden_layers' in params:
+                num_layers = params['num_hidden_layers']
+                # If not already specified, create default layer sizes
+                if 'hidden_sizes' not in model_kwargs:
+                    base_neurons = params.get('neurons_per_layer', 256)
+                    model_kwargs['hidden_sizes'] = [base_neurons // (2 ** i) for i in range(num_layers)]
+            
+            # Handle neurons_per_layer for MLP
+            if 'neurons_per_layer' in params and 'hidden_sizes' not in model_kwargs and 'num_hidden_layers' not in params:
+                # Use default 3 hidden layers
+                neurons = params['neurons_per_layer']
+                model_kwargs['hidden_sizes'] = [neurons, neurons // 2, neurons // 4]
+            
+            # Handle dropout for MLP
+            if 'dropout' in params and model_class.__name__ == 'MLP':
+                model_kwargs['dropout'] = params['dropout']
+            
+            # Add any other parameters that aren't known training parameters
             for key in params:
-                if key not in ['learning_rate', 'batch_size', 'optimizer', 'num_epochs']:
+                if key not in ['learning_rate', 'batch_size', 'optimizer', 'num_epochs', 
+                              'hidden_sizes', 'num_hidden_layers', 'neurons_per_layer', 'dropout',
+                              'kernel_size', 'padding']:
                     model_kwargs[key] = params[key]
             
             # Setup model and loaders
