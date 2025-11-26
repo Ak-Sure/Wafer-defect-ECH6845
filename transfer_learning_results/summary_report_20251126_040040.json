@@ -1,0 +1,21 @@
+{
+    "model": "Transfer Learning (ResNet18)",
+    "timestamp": "20251126_040040",
+    "total_combinations": 16,
+    "best_val_accuracy": 0.9459838653104174,
+    "best_test_accuracy": 0.9388041381728914,
+    "best_hyperparameters": {
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "num_epochs": 15,
+        "freeze_layers": 2,
+        "dropout": 0.3
+    },
+    "top5_accuracies": [
+        0.9459838653104174,
+        0.9442300947036127,
+        0.9370396352157138,
+        0.9279200280603297,
+        0.9230094703612768
+    ]
+}
