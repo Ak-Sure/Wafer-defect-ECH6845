@@ -1,6 +1,8 @@
 # Wafer Defect Classification (Final project for ECH684)
 Deep learning to identify the defect type in semiconductor wafers
+![38 defect types in semi conductor wafer chips](output.png)
 ## Step-by-Step Setup Guide
+
 
 ## 📋 Overview
 
@@ -16,5 +18,6 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 python -m ipykernel install --user --name=wafer_defect --display-name="Python (Wafer Defect)"
 ```
 ---
+
 
 
