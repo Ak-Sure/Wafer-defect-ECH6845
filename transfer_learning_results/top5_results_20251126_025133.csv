@@ -1,2 +1,0 @@
-Rank,learning_rate,batch_size,num_epochs,Train_Acc,Val_Acc,Test_Acc,Epochs,Params
-1,0.0001,32,5,0.8944,0.866,0.8516570226196739,5,12615344

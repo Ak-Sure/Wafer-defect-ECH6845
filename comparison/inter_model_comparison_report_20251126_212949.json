@@ -1,0 +1,136 @@
+{
+    "timestamp": "20251126_212949",
+    "comparison": [
+        {
+            "Model": "CNN",
+            "Val Accuracy": 0.9750964573833742,
+            "Test Accuracy": 0.9708925127126073,
+            "Tuning Combinations": 288,
+            "Top 5 Mean Val Acc": 0.9739740441950193
+        },
+        {
+            "Model": "Transfer Learning",
+            "Val Accuracy": 0.9396702911259207,
+            "Test Accuracy": 0.9386287918639312,
+            "Tuning Combinations": 16,
+            "Top 5 Mean Val Acc": 0.9335320940021046
+        },
+        {
+            "Model": "MLP",
+            "Val Accuracy": 0.7314977200982111,
+            "Test Accuracy": 0.7269857969489742,
+            "Tuning Combinations": 648,
+            "Top 5 Mean Val Acc": 0.7050157839354613
+        },
+        {
+            "Model": "SimpleNN",
+            "Val Accuracy": 0.5156085584005612,
+            "Test Accuracy": 0.5037699456426442,
+            "Tuning Combinations": 72,
+            "Top 5 Mean Val Acc": 0.5103823219922834
+        }
+    ],
+    "best_model": {
+        "name": "CNN",
+        "test_accuracy": 0.9708925127126073,
+        "val_accuracy": 0.9750964573833742,
+        "hyperparameters": {
+            "learning_rate": 0.001,
+            "batch_size": 128,
+            "kernel_size": 5,
+            "padding": 1,
+            "num_epochs": 30,
+            "optimizer": "adam"
+        }
+    },
+    "all_model_details": {
+        "SimpleNN": {
+            "model": "SimpleNN",
+            "timestamp": "20251125_213552",
+            "total_combinations": 72,
+            "best_val_accuracy": 0.5156085584005612,
+            "best_test_accuracy": 0.5037699456426442,
+            "best_hyperparameters": {
+                "learning_rate": 0.001,
+                "batch_size": 128,
+                "num_epochs": 30,
+                "optimizer": "adam"
+            },
+            "top5_accuracies": [
+                0.5156085584005612,
+                0.5128025254296738,
+                0.5122763942476324,
+                0.5070150824272185,
+                0.5042090494563312
+            ]
+        },
+        "MLP": {
+            "model": "MLP",
+            "timestamp": "20251125_231212",
+            "total_combinations": 648,
+            "best_val_accuracy": 0.7314977200982111,
+            "best_test_accuracy": 0.7269857969489742,
+            "best_hyperparameters": {
+                "learning_rate": 0.001,
+                "batch_size": 64,
+                "hidden_sizes": [
+                    256,
+                    128
+                ],
+                "dropout": 0.1,
+                "num_epochs": 30,
+                "optimizer": "adam"
+            },
+            "top5_accuracies": [
+                0.7314977200982111,
+                0.7072956857243072,
+                0.6995790950543669,
+                0.694317783233953,
+                0.6923886355664679
+            ]
+        },
+        "CNN": {
+            "model": "CNN",
+            "timestamp": "20251126_020748",
+            "total_combinations": 288,
+            "best_val_accuracy": 0.9750964573833742,
+            "best_test_accuracy": 0.9708925127126073,
+            "best_hyperparameters": {
+                "learning_rate": 0.001,
+                "batch_size": 128,
+                "kernel_size": 5,
+                "padding": 1,
+                "num_epochs": 30,
+                "optimizer": "adam"
+            },
+            "top5_accuracies": [
+                0.9750964573833742,
+                0.9747457032620134,
+                0.9743949491406524,
+                0.9729919326552087,
+                0.9726411785338478
+            ]
+        },
+        "Transfer Learning": {
+            "model": "Transfer Learning (ResNet18)",
+            "timestamp": "20251126_210742",
+            "total_combinations": 16,
+            "best_val_accuracy": 0.9396702911259207,
+            "best_test_accuracy": 0.9386287918639312,
+            "best_hyperparameters": {
+                "learning_rate": 0.001,
+                "batch_size": 32,
+                "num_epochs": 20,
+                "freeze_layers": 2,
+                "dropout": 0.3
+            },
+            "top5_accuracies": [
+                0.9396702911259207,
+                0.9373903893370747,
+                0.935987372851631,
+                0.9312521922132585,
+                0.9233602244826377
+            ]
+        }
+    }
+}
