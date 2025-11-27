@@ -17,6 +17,8 @@ This project implements and compares multiple deep learning architectures for cl
 3. **Convolutional Neural Network (CNN)** - Custom CNN with batch normalization and max pooling
 4. **Transfer Learning** - Fine-tuned ResNet18 and MobileNetV2 models
 
+![Saliency maps](comparison/simple_saliency_maps_all_models.png)
+
 ## 🚀 Step-by-Step Setup Guide
 
 ### Step 1: Load Conda Module and Create Environment
@@ -189,3 +191,4 @@ The repository includes several notebooks for experimentation:
 ## 📄 License
 
 This project was developed as part of the ECH6845 course.
+
