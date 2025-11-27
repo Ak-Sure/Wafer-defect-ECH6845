@@ -154,3 +154,73 @@ class WaferMobileNet(nn.Module):
     
     def forward(self, x):
         return self.mobilenet(x)
+
+
+class WaferResNet18(nn.Module):
+    """Transfer learning with ResNet18 - robust feature extraction with layer freezing."""
+    
+    def __init__(self, num_classes, pretrained=True, freeze_layers=0, dropout=0.5):
+        """
+        Args:
+            num_classes: Number of output classes
+            pretrained: Whether to load ImageNet pretrained weights
+            freeze_layers: Number of residual layers to freeze (0-4)
+                          0 = no freezing (train all layers)
+                          1 = freeze layer1
+                          2 = freeze layer1 + layer2
+                          3 = freeze layer1 + layer2 + layer3
+                          4 = freeze all conv layers (only train classifier)
+            dropout: Dropout rate before final classification layer
+        """
+        super(WaferResNet18, self).__init__()
+        
+        # Load pre-trained ResNet18 (expects 3-channel RGB input)
+        weights = models.ResNet18_Weights.IMAGENET1K_V1 if pretrained else None
+        self.resnet = models.resnet18(weights=weights)
+        
+        # Freeze initial conv and bn layers if any freezing is requested
+        if freeze_layers > 0:
+            for param in self.resnet.conv1.parameters():
+                param.requires_grad = False
+            for param in self.resnet.bn1.parameters():
+                param.requires_grad = False
+        
+        # Freeze residual layers based on freeze_layers parameter
+        layers_to_freeze = [self.resnet.layer1, self.resnet.layer2, 
+                           self.resnet.layer3, self.resnet.layer4]
+        
+        for i in range(min(freeze_layers, 4)):
+            for param in layers_to_freeze[i].parameters():
+                param.requires_grad = False
+        
+        # Replace final fully connected layer
+        # ResNet18 fc layer has 512 input features
+        num_features = self.resnet.fc.in_features
+        self.resnet.fc = nn.Sequential(
+            nn.Dropout(dropout),
+            nn.Linear(num_features, num_classes)
+        )
+        
+        # Always allow gradients in the classifier
+        for param in self.resnet.fc.parameters():
+            param.requires_grad = True
+        
+        # Store config for reference
+        self.freeze_layers = freeze_layers
+        self.num_trainable = sum(p.numel() for p in self.parameters() if p.requires_grad)
+        self.num_total = sum(p.numel() for p in self.parameters())
+    
+    def forward(self, x):
+        return self.resnet(x)
+    
+    def get_frozen_info(self):
+        """Return information about frozen layers."""
+        frozen = sum(p.numel() for p in self.parameters() if not p.requires_grad)
+        trainable = sum(p.numel() for p in self.parameters() if p.requires_grad)
+        return {
+            'freeze_layers': self.freeze_layers,
+            'frozen_params': frozen,
+            'trainable_params': trainable,
+            'total_params': frozen + trainable,
+            'trainable_percent': 100 * trainable / (frozen + trainable)
+        }

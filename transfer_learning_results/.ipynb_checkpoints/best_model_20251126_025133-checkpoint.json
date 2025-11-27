@@ -1,0 +1,9 @@
+{
+    "best_params": {
+        "learning_rate": 0.0001,
+        "batch_size": 32,
+        "num_epochs": 5
+    },
+    "best_val_acc": 0.866,
+    "best_test_acc": 0.8516570226196739
+}
