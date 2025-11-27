@@ -1,0 +1,15 @@
+{
+    "best_params": {
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "hidden_sizes": [
+            256,
+            128
+        ],
+        "dropout": 0.1,
+        "num_epochs": 30,
+        "optimizer": "adam"
+    },
+    "best_val_acc": 0.7314977200982111,
+    "best_test_acc": 0.7269857969489742
+}

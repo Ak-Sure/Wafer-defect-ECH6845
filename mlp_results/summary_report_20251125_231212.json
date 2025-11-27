@@ -1,0 +1,25 @@
+{
+    "model": "MLP",
+    "timestamp": "20251125_231212",
+    "total_combinations": 648,
+    "best_val_accuracy": 0.7314977200982111,
+    "best_test_accuracy": 0.7269857969489742,
+    "best_hyperparameters": {
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "hidden_sizes": [
+            256,
+            128
+        ],
+        "dropout": 0.1,
+        "num_epochs": 30,
+        "optimizer": "adam"
+    },
+    "top5_accuracies": [
+        0.7314977200982111,
+        0.7072956857243072,
+        0.6995790950543669,
+        0.694317783233953,
+        0.6923886355664679
+    ]
+}
