@@ -140,7 +140,7 @@ print(f"Test Accuracy: {test_acc:.4f}")
 # Plot confusion matrix
 plot_confusion_matrix(test_labels, test_preds, num_classes=38)
 ```
-
+![Results](comparison/inter_model_comparison.png)
 ## 📊 Model Configurations
 
 All model configurations are centralized in `config.py`:
@@ -191,4 +191,5 @@ The repository includes several notebooks for experimentation:
 ## 📄 License
 
 This project was developed as part of the ECH6845 course.
+
 
