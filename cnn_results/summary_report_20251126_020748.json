@@ -1,0 +1,22 @@
+{
+    "model": "CNN",
+    "timestamp": "20251126_020748",
+    "total_combinations": 288,
+    "best_val_accuracy": 0.9750964573833742,
+    "best_test_accuracy": 0.9708925127126073,
+    "best_hyperparameters": {
+        "learning_rate": 0.001,
+        "batch_size": 128,
+        "kernel_size": 5,
+        "padding": 1,
+        "num_epochs": 30,
+        "optimizer": "adam"
+    },
+    "top5_accuracies": [
+        0.9750964573833742,
+        0.9747457032620134,
+        0.9743949491406524,
+        0.9729919326552087,
+        0.9726411785338478
+    ]
+}
