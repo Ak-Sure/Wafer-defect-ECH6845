@@ -16,7 +16,6 @@ This project implements and compares multiple deep learning architectures for cl
 2. **Multi-Layer Perceptron (MLP)** - Deep fully connected architecture with dropout regularization
 3. **Convolutional Neural Network (CNN)** - Custom CNN with batch normalization and max pooling
 4. **Transfer Learning** - Fine-tuned ResNet18 and MobileNetV2 models
-5. **Lightweight CNN** - Optimized for edge deployment
 
 ## 🚀 Step-by-Step Setup Guide
 
@@ -48,28 +47,6 @@ python -m ipykernel install --user --name=wafer_defect --display-name="Python (W
 
 Place the `mixedtype-wafer-defect-datasets` folder containing `Wafer_Map_Datasets.npz` in the project root directory.
 
-## 📁 Project Structure
-
-```
-Wafer-defect-ECH6845/
-├── README.md                                    # Project documentation
-├── config.py                                    # Model configurations and hyperparameter grids
-├── data_loading.py                              # WaferDataLoader class for dataset handling
-├── models.py                                    # Neural network model definitions
-├── utility.py                                   # Training, evaluation, and tuning utilities
-├── model_tuning_simplenn.ipynb                 # Simple NN hyperparameter tuning
-├── model_tuning_mlp.ipynb                      # MLP hyperparameter tuning
-├── model_tuning_cnn.ipynb                      # CNN hyperparameter tuning
-├── model_tuning_transfer_learning.ipynb        # Transfer learning experiments
-├── model_comparison.ipynb                       # Comparative analysis of all models
-├── wafer_defect_hyper.ipynb                    # Comprehensive hyperparameter search
-├── mixedtype-wafer-defect-datasets/            # Dataset directory
-├── simplenn_results/                            # Simple NN training results
-├── mlp_results/                                 # MLP training results
-├── cnn_results/                                 # CNN training results
-├── transfer_learning_results/                   # Transfer learning results
-└── comparison/                                  # Model comparison results
-```
 
 ## 🔧 Usage
 
@@ -185,7 +162,6 @@ mlp_grid = get_tuning_grid('MLP')
 
 ## 📈 Key Features
 
-- **Modular Architecture**: Separate modules for data loading, models, and utilities
 - **Comprehensive Hyperparameter Tuning**: Grid search with k-fold cross-validation
 - **Early Stopping**: Prevent overfitting with configurable patience
 - **Model Checkpointing**: Save and load best models
@@ -201,22 +177,15 @@ The repository includes several notebooks for experimentation:
 3. **model_tuning_cnn.ipynb** - CNN hyperparameter optimization
 4. **model_tuning_transfer_learning.ipynb** - Transfer learning with ResNet18/MobileNetV2
 5. **model_comparison.ipynb** - Comprehensive comparison of all approaches
-6. **wafer_defect_hyper.ipynb** - Advanced hyperparameter search strategies
 
 ## 🔬 Dataset Information
 
 - **Total Samples**: 38,015 wafer maps
 - **Image Size**: 52 × 52 pixels (grayscale)
 - **Number of Classes**: 38 unique defect patterns
-- **Label Format**: 8-bit binary patterns (e.g., "10100000" for Class 9)
+- **Label Format**: 8-bit binary patterns, with each the 1's indicating a specific defect type (e.g., "10100000" for Class 9)
 - **Split Ratio**: 70% train, 15% validation, 15% test
 
 ## 📄 License
 
 This project was developed as part of the ECH6845 course.
-
-## 🙏 Acknowledgments
-
-- WM-811K dataset for providing the wafer defect data
-- Course instructors and TAs for guidance and support
-
